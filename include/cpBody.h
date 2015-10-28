@@ -25,20 +25,20 @@
 /// They are given a shape by creating collision shapes (cpShape) that point to the body.
 /// @{
 
-typedef enum cpBodyType {
-	/// A dynamic body is one that is affected by gravity, forces, and collisions.
-	/// This is the default body type.
-	CP_BODY_TYPE_DYNAMIC,
-	/// A kinematic body is an infinite mass, user controlled body that is not affected by gravity, forces or collisions.
-	/// Instead the body only moves based on it's velocity.
-	/// Dynamic bodies collide normally with kinematic bodies, though the kinematic body will be unaffected.
-	/// Collisions between two kinematic bodies, or a kinematic body and a static body produce collision callbacks, but no collision response.
-	CP_BODY_TYPE_KINEMATIC,
-	/// A static body is a body that never (or rarely) moves. If you move a static body, you must call one of the cpSpaceReindex*() functions.
-	/// Chipmunk uses this information to optimize the collision detection.
-	/// Static bodies do not produce collision callbacks when colliding with other static bodies.
-	CP_BODY_TYPE_STATIC,
-} cpBodyType;
+typedef enum cpBodyType /* { */
+/* 	/// A dynamic body is one that is affected by gravity, forces, and collisions. */
+/* 	/// This is the default body type. */
+/*         CP_BODY_TYPE_DYNAMIC, */
+/* 	/// A kinematic body is an infinite mass, user controlled body that is not affected by gravity, forces or collisions. */
+/* 	/// Instead the body only moves based on it's velocity. */
+/* 	/// Dynamic bodies collide normally with kinematic bodies, though the kinematic body will be unaffected. */
+/* 	/// Collisions between two kinematic bodies, or a kinematic body and a static body produce collision callbacks, but no collision response. */
+/* 	CP_BODY_TYPE_KINEMATIC, */
+/* 	/// A static body is a body that never (or rarely) moves. If you move a static body, you must call one of the cpSpaceReindex*() functions. */
+/* 	/// Chipmunk uses this information to optimize the collision detection. */
+/* 	/// Static bodies do not produce collision callbacks when colliding with other static bodies. */
+/*          CP_BODY_TYPE_STATIC, */
+/* } */ cpBodyType;
 
 /// Rigid body velocity update function type.
 typedef void (*cpBodyVelocityFunc)(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt);
@@ -171,17 +171,17 @@ CP_EXPORT cpVect cpBodyGetVelocityAtLocalPoint(const cpBody *body, cpVect point)
 /// Get the amount of kinetic energy contained by the body.
 CP_EXPORT cpFloat cpBodyKineticEnergy(const cpBody *body);
 
-/// Body/shape iterator callback function type. 
+/// Body/shape iterator callback function type.
 typedef void (*cpBodyShapeIteratorFunc)(cpBody *body, cpShape *shape, void *data);
 /// Call @c func once for each shape attached to @c body and added to the space.
 CP_EXPORT void cpBodyEachShape(cpBody *body, cpBodyShapeIteratorFunc func, void *data);
 
-/// Body/constraint iterator callback function type. 
+/// Body/constraint iterator callback function type.
 typedef void (*cpBodyConstraintIteratorFunc)(cpBody *body, cpConstraint *constraint, void *data);
 /// Call @c func once for each constraint attached to @c body and added to the space.
 CP_EXPORT void cpBodyEachConstraint(cpBody *body, cpBodyConstraintIteratorFunc func, void *data);
 
-/// Body/arbiter iterator callback function type. 
+/// Body/arbiter iterator callback function type.
 typedef void (*cpBodyArbiterIteratorFunc)(cpBody *body, cpArbiter *arbiter, void *data);
 /// Call @c func once for each arbiter that is currently active on the body.
 CP_EXPORT void cpBodyEachArbiter(cpBody *body, cpBodyArbiterIteratorFunc func, void *data);

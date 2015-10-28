@@ -14,18 +14,4 @@
 	      foreign-transformer: struct-by-value-transformer)
 
 (bind "#define CP_EXPORT")
-
-(bind-file "include/chipmunk_types.h")
-
-(bind-file "include/cpVect.h")
-(bind-file "include/cpBB.h")
-
-(bind-file "include/cpSpatialIndex.h")
-(bind-file "include/cpTransform.h")
-(bind-file "include/cpArbiter.h")
-(bind-file "include/cpConstraint.h")
-(bind-file "include/cpShape.h")
-(bind-file "include/cpSpace.h")
-(bind-file "include/cpRobust.h")
-
-;;(bind-file "include/chipmunk.h")
+(bind-file "include/chipmunk.h")

@@ -31,23 +31,25 @@
 	#define __declspec(dllexport)
 #else
 	#include <alloca.h>
-	#define #endif
-
-#ifdef __cplusplus
-extern "C" {
+	#define
 #endif
 
-void cpMessage(const char *condition, const char *file, int line, int isError, int isHardError, const char *message, ...);
-#ifdef NDEBUG
-	#define	cpAssertWarn(__condition__, ...)
-	#define	cpAssertSoft(__condition__, ...)
-#else
-	#define cpAssertSoft(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 0, __VA_ARGS__); abort();}
-	#define cpAssertWarn(__condition__, ...) if(!(__condition__)) cpMessage(#__condition__, __FILE__, __LINE__, 0, 0, __VA_ARGS__)
-#endif
+/* #ifdef __cplusplus */
+/* extern "C" { */
+/* #endif */
+
+  // void cpMessage(const char *condition, const char *file, int line, int isError, int isHardError, const char *message, ...);
+
+/* #ifdef NDEBUG */
+/* 	#define	cpAssertWarn(__condition__, ...) */
+/* 	#define	cpAssertSoft(__condition__, ...) */
+/* #else */
+/* 	#define cpAssertSoft(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 0, __VA_ARGS__); abort();} */
+/* 	#define cpAssertWarn(__condition__, ...) if(!(__condition__)) cpMessage(#__condition__, __FILE__, __LINE__, 0, 0, __VA_ARGS__) */
+/* #endif */
 
 // Hard assertions are used in situations where the program definitely will crash anyway, and the reason is inexpensive to detect.
-#define cpAssertHard(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 1, __VA_ARGS__); abort();}
+// #define cpAssertHard(__condition__, ...) if(!(__condition__)){cpMessage(#__condition__, __FILE__, __LINE__, 1, 1, __VA_ARGS__); abort();}
 
 #include "chipmunk_types.h"
 
@@ -172,9 +174,9 @@ int cpConvexHull(int count, const cpVect *verts, cpVect *result, int *first, cpF
 /// @c count and @c verts is the input array passed to cpConvexHull().
 /// @c count_var and @c verts_var are the names of the variables the macro creates to store the result.
 /// The output vertex array is allocated on the stack using alloca() so it will be freed automatically, but cannot be returned from the current scope.
-#define CP_CONVEX_HULL(__count__, __verts__, __count_var__, __verts_var__) \
-cpVect *__verts_var__ = (cpVect *)alloca(__count__*sizeof(cpVect)); \
-int __count_var__ = cpConvexHull(__count__, __verts__, __verts_var__, NULL, 0.0); \
+// #define CP_CONVEX_HULL(__count__, __verts__, __count_var__, __verts_var__) \
+  // cpVect *__verts_var__ = (cpVect *)alloca(__count__*sizeof(cpVect)); \
+  // int __count_var__ = cpConvexHull(__count__, __verts__, __verts_var__, NULL, 0.0);
 
 /// Returns the closest point on the line segment ab, to the point p.
 static inline cpVect
@@ -216,15 +218,15 @@ cpBool cpSpaceShapeQuery_b(cpSpace *space, cpShape *shape, cpSpaceShapeQueryBloc
 
 
 //@}
-
-#ifdef __cplusplus
-}
-
-static inline cpVect operator *(const cpVect v, const cpFloat s){return cpvmult(v, s);}
-static inline cpVect operator +(const cpVect v1, const cpVect v2){return cpvadd(v1, v2);}
-static inline cpVect operator -(const cpVect v1, const cpVect v2){return cpvsub(v1, v2);}
-static inline cpBool operator ==(const cpVect v1, const cpVect v2){return cpveql(v1, v2);}
-static inline cpVect operator -(const cpVect v){return cpvneg(v);}
-
-#endif
+//
+//#ifdef __cplusplus
+//}
+//
+//static inline cpVect operator *(const cpVect v, const cpFloat s){return cpvmult(v, s);}
+//static inline cpVect operator +(const cpVect v1, const cpVect v2){return cpvadd(v1, v2);}
+//static inline cpVect operator -(const cpVect v1, const cpVect v2){return cpvsub(v1, v2);}
+//static inline cpBool operator ==(const cpVect v1, const cpVect v2){return cpveql(v1, v2);}
+//static inline cpVect operator -(const cpVect v){return cpvneg(v);}
+//
+//#endif
 #endif

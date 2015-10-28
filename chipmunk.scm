@@ -1,5 +1,6 @@
-(module chipmunk *
-  (import chicken scheme)
+(module chipmunk
+  *
+  (import scheme chicken)
 
 #>
 #include <chipmunk/chipmunk_private.h>
@@ -8,5 +9,10 @@
 <#
 
 (include "chipmunk-bind.scm")
+
+(define (v x y)
+  (f64vector x y))
+
+(define vzero (v 0. 0.))
 
 )
