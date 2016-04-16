@@ -1,6 +1,6 @@
-(import-for-syntax bind-translator matchable)
+(import-for-syntax bind-translator matchable extras)
 (begin-for-syntax
- (import chicken scheme matchable bind-translator foreign)
+ (import chicken scheme matchable bind-translator foreign extras)
 
 
 (define (extract-type type)
@@ -17,6 +17,8 @@
     ["cpBB" 'f64vector]
     ["cpTransform" 'f64vector]
     ["cpMat2x2" 'f64vector]
+    ["cpSpaceDebugColor" 'f64vector]
+    ["cpShapeFilter" 'f64vector]
     ["uintptr_t" 'long]
     [other #f]))
 
@@ -28,8 +30,19 @@
     ["cpBB" #t]
     ["cpTransform" #t]
     ["cpMat2x2" #t]
+    ["cpShapeFilter" #t]
+    ["cpSpaceDebugColor" #t]
     ["uintptr_t" #f] ;; <-
     [other #f]))
+
+(define (struct-by-value-size type)
+  (match (extract-type type) ; struct sizes
+    ["cpBB" 4]
+    ["cpVect" 2]
+    ["cpMat2x2" 4]
+    ["cpShapeFilter" 3]
+    ["cpTransform" 6]
+    ["cpSpaceDebugColor" 4]))
 
 (define (convert-args? args)
   (any convert-arg-type? (map car args)))
@@ -70,8 +83,11 @@
 ;; workaround to adapt functions that pass by value
 ;; Chicken Scheme cannot bind function that receive structs by value,
 ;; as a workaround we pass f64vector instead and replaces all uses with derefences
-(define struct-by-value-transformer (void))
+(define struct-by-value-transformer (void)))
 (define-for-syntax (chipmunk#struct-by-value-transformer foreign rename)
+  (display "\n-- BEFORE : ---")
+  (pretty-print foreign)
+  (newline)
   (match foreign
     [(foreign-lambda* return-type args body)
      (if (returns-struct-by-value? return-type)
@@ -95,11 +111,7 @@
 	   ;; provide the 'collect' argument, the foreign function's return value will be assign it result to it,
 	   ;; so we can return it afterward
 	   `(lambda ,argnames
-	      (,(rename 'let) ([collect (make-f64vector ,(match (extract-type return-type) ; struct sizes
-							   ["cpBB" 4]
-							   ["cpVect" 2]
-							   ["cpMat2x2" 4]
-							   ["cpTransform" 6])
+	      (,(rename 'let) ([collect (make-f64vector ,(struct-by-value-size return-type)
 							0)])
 	       ;; pass the 'collect' argument + original arguments to modified binding
 	       (,bound-foreign ,@(cons 'collect argnames))
@@ -112,4 +124,7 @@
 	       ,(convert-ret-type return-type)
 	       ,(convert-args args)
 	     ,(convert-body body args))
-	  rename))])))
+	  rename))
+
+
+     ]))
