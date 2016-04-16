@@ -6,9 +6,12 @@
 	 ./Chipmunk2D/src/*.c
 	 chipmunk.scm
 	 -C --std=gnu99
+	 -C -Wvisibility
+	 -C -Wincompatible-pointer-types
          -j chipmunk)
 
-(compile -s chipmunk.import.scm)
+(compile -s chipmunk.import.scm
+	 -C -Wincompatible-pointer-types)
 
 (install-extension 'chipmunk
                    '("chipmunk.so" "chipmunk.import.so"))
