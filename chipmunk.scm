@@ -10,6 +10,8 @@
 
 (include "chipmunk-bind.scm")
 
+(include "chipmunk-callback.scm")
+
 (define (v x y)
   (f64vector x y))
 
