@@ -14,4 +14,10 @@
 	      foreign-transformer: struct-by-value-transformer)
 
 (bind "#define CP_EXPORT")
+(bind "#define CP_PI 3.14159265358979")
+
+;; by default its uintprt_t but chicken scheme does not like that
+(bind "#define CP_COLLISION_TYPE_TYPE long")
+
+
 (bind-file "include/chipmunk.h")

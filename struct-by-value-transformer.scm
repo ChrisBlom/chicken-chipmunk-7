@@ -32,6 +32,7 @@
     ["cpMat2x2" #t]
     ["cpShapeFilter" #t]
     ["cpSpaceDebugColor" #t]
+    ["cpShapeFilter" #t]
     ["uintptr_t" #f] ;; <-
     [other #f]))
 
@@ -42,7 +43,8 @@
     ["cpMat2x2" 4]
     ["cpShapeFilter" 3]
     ["cpTransform" 6]
-    ["cpSpaceDebugColor" 4]))
+    ["cpSpaceDebugColor" 4]
+    ["cpShapeFilter" 3]))
 
 (define (convert-args? args)
   (any convert-arg-type? (map car args)))
