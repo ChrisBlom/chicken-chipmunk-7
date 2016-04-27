@@ -12,6 +12,16 @@
 
 (include "chipmunk-callback.scm")
 
+
+(include "callbacks.scm")
+
+(define all-categories (foreign-value "(~(cpBitmask)0)" unsigned-int32))
+(define wildcard-collision (foreign-value "(~(cpCollisionType)0)" unsigned-int32))
+
+(define no-group (foreign-value "((cpGroup)0)" unsigned-int32))
+(define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
+
+
 (define (v x y)
   (f64vector x y))
 
@@ -51,6 +61,13 @@
                       (,(foreign-value "CP_SEGMENT_SHAPE" int) . segment)
                       (,(foreign-value "CP_POLY_SHAPE" int) . poly))))))
 
+;; TODO add getter-with-setter procedures for all get/set pairs
+;; <class>-<set|get>-<property>
+(define shape-elasticity
+  (getter-with-setter
+   shape-get-elasticity
+   shape-set-elasticity))
+
 ;; constraint
 (define (constraint-get-type x)
   (cond
@@ -66,6 +83,4 @@
    [(eq? #\x1 (constraint-is-slide-joint           x)) 'slide-joint]))
 
 
-(define wildcard-collision-type (foreign-value "CP_WILDCARD_COLLISION_TYPE" long))
-
- )
+(define wildcard-collision-type (foreign-value "CP_WILDCARD_COLLISION_TYPE" long)))

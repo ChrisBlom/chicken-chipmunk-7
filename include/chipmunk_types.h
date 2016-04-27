@@ -37,6 +37,8 @@
 	#define CP_USE_CGTYPES 1
 #endif
 
+
+
 #if CP_USE_CGTYPES
 	#if TARGET_OS_IPHONE
 		#import <CoreGraphics/CGGeometry.h>
@@ -161,11 +163,12 @@ static inline cpFloat cpflerpconst(cpFloat f1, cpFloat f2, cpFloat d)
 
 
 /// Hash value type.
-//#ifdef CP_HASH_VALUE_TYPE
-//	typedef CP_HASH_VALUE_TYPE cpHashValue;
-//#else
-typedef uintptr_t cpHashValue;
-//#endif
+#ifdef CP_HASH_VALUE_TYPE
+	typedef CP_HASH_VALUE_TYPE cpHashValue;
+
+#else
+        typedef uintptr_t cpHashValue;
+#endif
 
 /// Type used internally to cache colliding object info for cpCollideShapes().
 /// Should be at least 32 bits.

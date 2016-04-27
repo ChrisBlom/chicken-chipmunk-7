@@ -11,13 +11,28 @@
 (bind-rename/pattern "^cp" "")
 
 (bind-options default-renaming: ""
-	      foreign-transformer: struct-by-value-transformer)
+	      foreign-transformer: struct-by-value-transformer
+	      export-constants: true
+	      )
+
+;;;; Override definitions
 
 (bind "#define CP_EXPORT")
 (bind "#define CP_PI 3.14159265358979")
 
-;; by default its uintprt_t but chicken scheme does not like that
-(bind "#define CP_COLLISION_TYPE_TYPE long")
+;; Custom: use ints (or maybe longs?) instead
+;; of the default uintptr_t as chicken bind doesn't support this type as
+;; a return type
+(bind "#define CP_GROUP_TYPE unsigned int")
+(bind "#define CP_HASH_VALUE_TYPE unsigned int")
+(bind "#define CP_COLLISION_TYPE_TYPE unsigned int")
 
+(define uint
+  (foreign-lambda* unsigned-int ((int x))
+    "unsigned int n = x;
+     C_return(n);") )
+
+;; TODO is it possible to use scheme objects as userdata?
+;; (bind "#define CP_DATA_POINTER_TYPE C_word *")
 
 (bind-file "include/chipmunk.h")

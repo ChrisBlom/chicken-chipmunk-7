@@ -204,8 +204,8 @@ cpBool cpSpaceAddPostStepCallback(cpSpace *space, cpPostStepFunc func, void *key
 typedef void (*cpSpacePointQueryFunc)(cpShape *shape, cpVect point, cpFloat distance, cpVect gradient, void *data);
 /// Query the space at a point and call @c func for each shape found.
 /////// void cpSpacePointQuery(cpSpace *space, cpVect point, cpFloat maxDistance, cpShapeFilter filter, cpSpacePointQueryFunc func, void *data);
-/// Query the space at a point and return the nearest shape found. Returns NULL if no shapes were found.
-/////// cpShape *cpSpacePointQueryNearest(cpSpace *space, cpVect point, cpFloat maxDistance, cpShapeFilter filter, cpPointQueryInfo *out);
+// Query the space at a point and return the nearest shape found. Returns NULL if no shapes were found.
+cpShape *cpSpacePointQueryNearest(cpSpace *space, cpVect point, cpFloat maxDistance, cpShapeFilter filter, cpPointQueryInfo *out);
 
 /// Segment query callback function type.
 typedef void (*cpSpaceSegmentQueryFunc)(cpShape *shape, cpVect point, cpVect normal, cpFloat alpha, void *data);

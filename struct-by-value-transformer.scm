@@ -18,8 +18,8 @@
     ["cpTransform" 'f64vector]
     ["cpMat2x2" 'f64vector]
     ["cpSpaceDebugColor" 'f64vector]
-    ["cpShapeFilter" 'f64vector]
-    ["uintptr_t" 'long]
+    ["cpShapeFilter" 'f64vector] ;; TODO <- this is not the right type! use uint32vector
+;    ["uintptr_t" 'long]
     [other #f]))
 
 (define (returns-struct-by-value? type)
@@ -33,7 +33,7 @@
     ["cpShapeFilter" #t]
     ["cpSpaceDebugColor" #t]
     ["cpShapeFilter" #t]
-    ["uintptr_t" #f] ;; <-
+;    ["uintptr_t" #f] ;; <-
     [other #f]))
 
 (define (struct-by-value-size type)
@@ -113,6 +113,7 @@
 	   ;; provide the 'collect' argument, the foreign function's return value will be assign it result to it,
 	   ;; so we can return it afterward
 	   `(lambda ,argnames
+	      ;; TODO let collect constructor depend on type
 	      (,(rename 'let) ([collect (make-f64vector ,(struct-by-value-size return-type)
 							0)])
 	       ;; pass the 'collect' argument + original arguments to modified binding
