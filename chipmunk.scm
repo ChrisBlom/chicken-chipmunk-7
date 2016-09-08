@@ -69,7 +69,7 @@
    shape-set-elasticity))
 
 ;; constraint
-(define (constraint-get-type x)
+(define (constraint-type x)
   (cond
    [(eq? #\x1 (constraint-is-damped-rotary-spring  x)) 'damped-rotary-spring]
    [(eq? #\x1 (constraint-is-damped-spring         x)) 'damped-spring]
