@@ -8,25 +8,17 @@
 #include <chipmunk/cpRobust.h>
 <#
 
+;; Bindings for the chipmunk
 (include "chipmunk-bind.scm")
 
 (include "chipmunk-callback.scm")
 
-
-(include "callbacks.scm")
-
-(define all-categories (foreign-value "(~(cpBitmask)0)" unsigned-int32))
-(define wildcard-collision (foreign-value "(~(cpCollisionType)0)" unsigned-int32))
-
-(define no-group (foreign-value "((cpGroup)0)" unsigned-int32))
-(define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
-
+;;;; Vector shorthands
 
 (define (v x y)
   (f64vector x y))
 
-(define vzero (v 0. 0.))
-(define v0 vzero)
+(define v0 (v 0. 0.))
 
 (define (v.x cpv)
   (f64vector-ref cpv 0))
@@ -34,15 +26,14 @@
 (define (v.y cpv)
   (f64vector-ref cpv 1))
 
-;; shorthands for operations vector
 (define v= veql)
 (define v+ vadd)
 (define v- vsub)
 (define v* vmult)
 (define v. vdot)
 
+;;;; Vararg variants
 
-;; var args
 (define (space-add-shapes space . shapes)
   (for-each (cut space-add-shape space <>) shapes))
 
@@ -52,7 +43,8 @@
 (define (space-add-constraints space . constraint)
   (for-each (cut space-add-constraint space <>) constraint))
 
-;; shape
+;;;; Shapes
+
 (define (shape-get-type shape)
   (let ([type ((foreign-lambda* integer (((c-pointer "cpShape") shape))
                            "C_return(shape->klass->type);")
@@ -68,7 +60,8 @@
    shape-get-elasticity
    shape-set-elasticity))
 
-;; constraint
+;;;; Constraints
+
 (define (constraint-type x)
   (cond
    [(eq? #\x1 (constraint-is-damped-rotary-spring  x)) 'damped-rotary-spring]
@@ -82,5 +75,11 @@
    [(eq? #\x1 (constraint-is-simple-motor          x)) 'simple-motor]
    [(eq? #\x1 (constraint-is-slide-joint           x)) 'slide-joint]))
 
+;;;; Collision
 
 (define wildcard-collision-type (foreign-value "CP_WILDCARD_COLLISION_TYPE" long)))
+(define all-categories (foreign-value "(~(cpBitmask)0)" unsigned-int32))
+(define wildcard-collision (foreign-value "(~(cpCollisionType)0)" unsigned-int32))
+
+(define no-group (foreign-value "((cpGroup)0)" unsigned-int32))
+(define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))

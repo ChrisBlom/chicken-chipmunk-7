@@ -2,25 +2,11 @@
 (begin-for-syntax
  (import chicken scheme matchable bind-translator foreign extras)
 
-
 (define (extract-type type)
   (match type
     [('struct x) (extract-type x)]
     [('const x) (extract-type x)]
     [other other]))
-
-(define (convert-arg-type? type)
-  (match type
-    [('const c) (convert-arg-type? c) ]
-    [('struct x) (convert-arg-type? x )  ]
-    ["cpVect" 'f64vector]
-    ["cpBB" 'f64vector]
-    ["cpTransform" 'f64vector]
-    ["cpMat2x2" 'f64vector]
-    ["cpSpaceDebugColor" 'f64vector]
-    ["cpShapeFilter" 'f64vector] ;; TODO <- this is not the right type! use uint32vector
-;    ["uintptr_t" 'long]
-    [other #f]))
 
 (define (returns-struct-by-value? type)
   (match type
@@ -33,7 +19,6 @@
     ["cpShapeFilter" #t]
     ["cpSpaceDebugColor" #t]
     ["cpShapeFilter" #t]
-;    ["uintptr_t" #f] ;; <-
     [other #f]))
 
 (define (struct-by-value-size type)
@@ -46,10 +31,19 @@
     ["cpSpaceDebugColor" 4]
     ["cpShapeFilter" 3]))
 
-(define (convert-args? args)
-  (any convert-arg-type? (map car args)))
+(define (convert-arg-type? type)
+  (match type
+    [('const c) (convert-arg-type? c) ]
+    [('struct x) (convert-arg-type? x )  ]
+    ["cpVect" 'f64vector]
+    ["cpBB" 'f64vector]
+    ["cpTransform" 'f64vector]
+    ["cpMat2x2" 'f64vector]
+    ["cpSpaceDebugColor" 'f64vector]
+    ["cpShapeFilter" 'f64vector] ;; TODO <- this is not the right type! use uint32vector
+    [other #f]))
 
-(define (convert-ret-type type)
+(define (convert-return-type type)
   (let ([converted (convert-arg-type? type)])
     (match converted
       [#f type]
@@ -77,19 +71,16 @@
 	[(h . t) (cons (if (member h conv-args)
 			   `(deref ,(conc "((" (arg->type h) "*)"  h ")") )
 			   h)
-		       (loop t))])))
-
-
-  )
+		       (loop t))]))))
 
 ;; workaround to adapt functions that pass by value
 ;; Chicken Scheme cannot bind function that receive structs by value,
 ;; as a workaround we pass f64vector instead and replaces all uses with derefences
 (define struct-by-value-transformer (void)))
 (define-for-syntax (chipmunk#struct-by-value-transformer foreign rename)
-  (display "\n-- BEFORE : ---")
-  (pretty-print foreign)
-  (newline)
+  ;(display "\n-- BEFORE : ---")
+  ;(pretty-print foreign)
+  ;(newline)
   (match foreign
     [(foreign-lambda* return-type args body)
      (if (returns-struct-by-value? return-type)
@@ -101,30 +92,30 @@
 			       `(foreign-lambda*
 				    ;; return void instead of the struct:
 				    void
-				    ;; include extra 'collect' argument to collect the foreign function's return value"
-				    ( (f64vector collect) ,@(convert-args args))
-				  ;; assign the foreign functions return value to 'collect', don't return anything:
+				    ;; include extra '_return_val' argument to collect the foreign function's return value"
+				    ( (f64vector _return_val) ,@(convert-args args))
+				  ;; assign the foreign functions return value to '_return_val' and don't return anything:
 				  (stmt
-				   ;; cast 'collect' value to a pointer
-				   (= ,(string-append (extract-type return-type) "* collect_ptr_") ,(string-append "(" (extract-type return-type)"*) collect"))
-				   ;; call foreign function and assign result to value of 'collect_ptr_', which also assigns it to 'collect'
-				   (= "*collect_ptr_" ,(convert-body body args) )))
+				   ;; cast '_return_val' value to a pointer
+				   (= ,(string-append (extract-type return-type) "* return_ptr_") ,(string-append "(" (extract-type return-type)"*) _return_val"))
+				   ;; call foreign function and assign result to value of 'return_ptr_', which also assigns it to '_return_val'
+				   (= "*return_ptr_" ,(convert-body body args) )))
 			       rename)])
-	   ;; provide the 'collect' argument, the foreign function's return value will be assign it result to it,
+	   ;; provide the '_return_val' argument, the foreign function's return value will be assign it result to it,
 	   ;; so we can return it afterward
 	   `(lambda ,argnames
 	      ;; TODO let collect constructor depend on type
-	      (,(rename 'let) ([collect (make-f64vector ,(struct-by-value-size return-type)
-							0)])
-	       ;; pass the 'collect' argument + original arguments to modified binding
-	       (,bound-foreign ,@(cons 'collect argnames))
-	       ;; return 'collect'
-	       collect)))
+	      (,(rename 'let) ([_return_val (make-f64vector ,(struct-by-value-size return-type) 0)])
+	       ;; pass the '_return_val' argument + original arguments to modified binding
+	       (,bound-foreign ,@(cons '_return_val argnames))
+	       ;; return '_return_val' f64vector
+	       _return_val)))
 
-	 ;; bind the foreign function with converted return type, args and body
+	 ;; Compatible return type:
+	 ;; only convert the arguments and body
 	 (bind-foreign-lambda*
 	  `(foreign-lambda*
-	       ,(convert-ret-type return-type)
+	       ,(convert-return-type return-type)
 	       ,(convert-args args)
 	     ,(convert-body body args))
 	  rename))
