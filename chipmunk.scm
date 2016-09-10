@@ -1,6 +1,7 @@
 (module chipmunk
   *
   (import scheme chicken)
+  (use srfi-4)
 
 #>
 #include <chipmunk/chipmunk_private.h>
