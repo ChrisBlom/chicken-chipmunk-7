@@ -78,9 +78,15 @@
 
 ;;;; Collision
 
-(define wildcard-collision-type (foreign-value "CP_WILDCARD_COLLISION_TYPE" long)))
+(define wildcard-collision-type (foreign-value "CP_WILDCARD_COLLISION_TYPE" long))
 (define all-categories (foreign-value "(~(cpBitmask)0)" unsigned-int32))
 (define wildcard-collision (foreign-value "(~(cpCollisionType)0)" unsigned-int32))
 
 (define no-group (foreign-value "((cpGroup)0)" unsigned-int32))
 (define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
+
+;;;; Getter + Setters
+
+(include "chipmunk-getter-with-setters.scm")
+
+)
