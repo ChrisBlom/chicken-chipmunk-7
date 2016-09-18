@@ -79,13 +79,31 @@
 ;; 	  `(define ,(symbol-append class '- attr)
 ;; 	     ,(symbol-append class '-get- attr))))))
 
+;;  (define-syntax define-varargs-add
+;;    (syntax-rules ()
+;;      ((define-attr-access attr-list class attr op)
+;;       `(define (,(symbol-append class '-add- attr 's) ,class . ,(symbol-append attr 's))
+;; 	 (for-each (lambda (,attr) (,(symbol-append class '-add- attr) ,class ,attr)) ,(symbol-append attr 's))
+;; 	 ,class
+;; 	 ))))
+
+;;  (define-syntax define-predicate
+;;    (syntax-rules ()
+;;      ((define-attr-access attr-list class attr op)
+;;       `(define ,(symbol-append class '- attr '?) ,(symbol-append class '- op '- attr)
+;; 	 ))))
+
 ;;  (with-output-to-file "chipmunk-getter-with-setters.scm"
 ;;    (lambda ()
 ;;      (for-each
 ;;       (lambda (x)
 ;; 	(apply (lambda (class attr op)
 ;; 		 (when (equal? op 'get)
-;; 		   (pretty-print (define-attr-access foo class attr op))))
+;; 		   (pretty-print (define-attr-access foo class attr op)))
+;; 		 (when (equal? op 'add)
+;; 		   (pretty-print (define-varargs-add foo class attr op)))
+;; 		 (when (equal? op 'is)
+;; 		   (pretty-print (define-predicate foo class attr op))))
 ;; 	       x))
 
 ;;       (append-map

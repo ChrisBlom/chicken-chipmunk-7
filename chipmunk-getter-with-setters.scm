@@ -1,3 +1,42 @@
+(define (space-add-post-step-callbacks space . post-step-callbacks)
+  (for-each
+    (lambda (post-step-callback)
+      (space-add-post-step-callback space post-step-callback))
+    post-step-callbacks)
+  space)
+(define (space-add-constraints space . constraints)
+  (for-each
+    (lambda (constraint) (space-add-constraint space constraint))
+    constraints)
+  space)
+(define (space-add-bodys space . bodys)
+  (for-each (lambda (body) (space-add-body space body)) bodys)
+  space)
+(define (space-add-shapes space . shapes)
+  (for-each (lambda (shape) (space-add-shape space shape)) shapes)
+  space)
+(define (space-add-wildcard-handlers space . wildcard-handlers)
+  (for-each
+    (lambda (wildcard-handler)
+      (space-add-wildcard-handler space wildcard-handler))
+    wildcard-handlers)
+  space)
+(define (space-add-collision-handlers space . collision-handlers)
+  (for-each
+    (lambda (collision-handler)
+      (space-add-collision-handler space collision-handler))
+    collision-handlers)
+  space)
+(define (space-add-default-collision-handlers
+         space
+         .
+         default-collision-handlers)
+  (for-each
+    (lambda (default-collision-handler)
+      (space-add-default-collision-handler space default-collision-handler))
+    default-collision-handlers)
+  space)
+(define space-locked? space-is-locked)
 (define space-current-time-step space-get-current-time-step)
 (define space-static-body space-get-static-body)
 (define space-user-data
@@ -24,20 +63,24 @@
   (getter-with-setter space-get-iterations space-set-iterations))
 (define simple-motor-rate
   (getter-with-setter simple-motor-get-rate simple-motor-set-rate))
+(define constraint-simple-motor? constraint-is-simple-motor)
 (define gear-joint-ratio
   (getter-with-setter gear-joint-get-ratio gear-joint-set-ratio))
 (define gear-joint-phase
   (getter-with-setter gear-joint-get-phase gear-joint-set-phase))
+(define constraint-gear-joint? constraint-is-gear-joint)
 (define ratchet-joint-ratchet
   (getter-with-setter ratchet-joint-get-ratchet ratchet-joint-set-ratchet))
 (define ratchet-joint-phase
   (getter-with-setter ratchet-joint-get-phase ratchet-joint-set-phase))
 (define ratchet-joint-angle
   (getter-with-setter ratchet-joint-get-angle ratchet-joint-set-angle))
+(define constraint-ratchet-joint? constraint-is-ratchet-joint)
 (define rotary-limit-joint-max
   (getter-with-setter rotary-limit-joint-get-max rotary-limit-joint-set-max))
 (define rotary-limit-joint-min
   (getter-with-setter rotary-limit-joint-get-min rotary-limit-joint-set-min))
+(define constraint-rotary-limit-joint? constraint-is-rotary-limit-joint)
 (define damped-rotary-spring-spring-torque-func
   (getter-with-setter
     damped-rotary-spring-get-spring-torque-func
@@ -54,6 +97,7 @@
   (getter-with-setter
     damped-rotary-spring-get-rest-angle
     damped-rotary-spring-set-rest-angle))
+(define constraint-damped-rotary-spring? constraint-is-damped-rotary-spring)
 (define damped-spring-spring-force-func
   (getter-with-setter
     damped-spring-get-spring-force-func
@@ -70,16 +114,19 @@
   (getter-with-setter damped-spring-get-anchor-b damped-spring-set-anchor-b))
 (define damped-spring-anchor-a
   (getter-with-setter damped-spring-get-anchor-a damped-spring-set-anchor-a))
+(define constraint-damped-spring? constraint-is-damped-spring)
 (define groove-joint-anchor-b
   (getter-with-setter groove-joint-get-anchor-b groove-joint-set-anchor-b))
 (define groove-joint-groove-b
   (getter-with-setter groove-joint-get-groove-b groove-joint-set-groove-b))
 (define groove-joint-groove-a
   (getter-with-setter groove-joint-get-groove-a groove-joint-set-groove-a))
+(define constraint-groove-joint? constraint-is-groove-joint)
 (define pivot-joint-anchor-b
   (getter-with-setter pivot-joint-get-anchor-b pivot-joint-set-anchor-b))
 (define pivot-joint-anchor-a
   (getter-with-setter pivot-joint-get-anchor-a pivot-joint-set-anchor-a))
+(define constraint-pivot-joint? constraint-is-pivot-joint)
 (define slide-joint-max
   (getter-with-setter slide-joint-get-max slide-joint-set-max))
 (define slide-joint-min
@@ -88,12 +135,14 @@
   (getter-with-setter slide-joint-get-anchor-b slide-joint-set-anchor-b))
 (define slide-joint-anchor-a
   (getter-with-setter slide-joint-get-anchor-a slide-joint-set-anchor-a))
+(define constraint-slide-joint? constraint-is-slide-joint)
 (define pin-joint-dist
   (getter-with-setter pin-joint-get-dist pin-joint-set-dist))
 (define pin-joint-anchor-b
   (getter-with-setter pin-joint-get-anchor-b pin-joint-set-anchor-b))
 (define pin-joint-anchor-a
   (getter-with-setter pin-joint-get-anchor-a pin-joint-set-anchor-a))
+(define constraint-pin-joint? constraint-is-pin-joint)
 (define constraint-impulse constraint-get-impulse)
 (define constraint-user-data
   (getter-with-setter constraint-get-user-data constraint-set-user-data))
@@ -164,11 +213,14 @@
 (define body-mass (getter-with-setter body-get-mass body-set-mass))
 (define body-space body-get-space)
 (define body-type (getter-with-setter body-get-type body-set-type))
+(define body-sleeping? body-is-sleeping)
 (define arbiter-depth arbiter-get-depth)
 (define arbiter-point-b arbiter-get-point-b)
 (define arbiter-point-a arbiter-get-point-a)
 (define arbiter-normal arbiter-get-normal)
 (define arbiter-count arbiter-get-count)
+(define arbiter-removal? arbiter-is-removal)
+(define arbiter-first-contact? arbiter-is-first-contact)
 (define arbiter-bodies arbiter-get-bodies)
 (define arbiter-shapes arbiter-get-shapes)
 (define arbiter-user-data
