@@ -1,6 +1,6 @@
 (module chipmunk
   *
-  (import scheme chicken)
+  (import scheme chicken srfi-1)
   (use srfi-4)
 
 #>
@@ -20,6 +20,7 @@
   (f64vector x y))
 
 (define v0 (v 0. 0.))
+(define v1 (v 1. 1.))
 
 (define (v.x cpv)
   (f64vector-ref cpv 0))
@@ -32,6 +33,12 @@
 (define v- vsub)
 (define v* vmult)
 (define v. vdot)
+
+(define (vsum vs)
+  (reduce v+ v0 vs))
+
+(define (vproduct vs)
+  (reduce v* v1 vs))
 
 ;;;; Vararg variants
 
