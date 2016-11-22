@@ -51,21 +51,7 @@
 ;; 	(string-substitute "([a-z])([A-Z])" "\\1-\\2" m #t)
 ;; 	"_" "-") ) ) ) )
 
-
-
 ;; (begin-for-syntax
-
-
-;; (define-for-syntax foo (append-map
-;; 			(lambda (x)
-;; 			  (if (string? (car x))
-;; 			      (match (string-match (regexp "cp([A-Z][A-Za-z]+)(Is|Get|Set|Add)([A-Za-z]+)") (car x))
-;; 				[(m class op attribute)
-;; 				 (list (map (compose string->symbol usual-naming-transform) (list class attribute op)))]
-;; 				[ow (list)])
-;; 			      (list)))
-;; 			function-names))
-
 
 ;;  (define-syntax define-attr-access
 ;;    (syntax-rules ()
@@ -79,11 +65,11 @@
 ;; 	  `(define ,(symbol-append class '- attr)
 ;; 	     ,(symbol-append class '-get- attr))))))
 
-;;  (define-syntax define-varargs-add
+;;  (define-syntax define-varargs
 ;;    (syntax-rules ()
 ;;      ((define-attr-access attr-list class attr op)
-;;       `(define (,(symbol-append class '-add- attr 's) ,class . ,(symbol-append attr 's))
-;; 	 (for-each (lambda (,attr) (,(symbol-append class '-add- attr) ,class ,attr)) ,(symbol-append attr 's))
+;;       `(define (,(symbol-append class '- op '- attr 's) ,class . ,(symbol-append attr 's))
+;; 	 (for-each (lambda (,attr) (,(symbol-append class '- op '- attr) ,class ,attr)) ,(symbol-append attr 's))
 ;; 	 ,class
 ;; 	 ))))
 
@@ -93,25 +79,40 @@
 ;;       `(define ,(symbol-append class '- attr '?) ,(symbol-append class '- op '- attr)
 ;; 	 ))))
 
-;;  (with-output-to-file "chipmunk-getter-with-setters.scm"
-;;    (lambda ()
-;;      (for-each
-;;       (lambda (x)
-;; 	(apply (lambda (class attr op)
-;; 		 (when (equal? op 'get)
-;; 		   (pretty-print (define-attr-access foo class attr op)))
-;; 		 (when (equal? op 'add)
-;; 		   (pretty-print (define-varargs-add foo class attr op)))
-;; 		 (when (equal? op 'is)
-;; 		   (pretty-print (define-predicate foo class attr op))))
-;; 	       x))
+;;  (define (extract-name def)
+;;    (pretty-print def)
+;;    (if (symbol? (cadr def))
+;;        (cadr def)
+;;        (caadr def)))
 
-;;       (append-map
-;;        (lambda (x)
-;; 	 (if (string? (car x))
-;; 	     (match (string-match (regexp "cp([A-Z][A-Za-z]+)(Is|Get|Set|Add)([A-Za-z]+)") (car x))
-;; 	       [(m class op attribute)
-;; 		(list (map (compose string->symbol usual-naming-transform) (list class attribute op)))]
-;; 	       [ow (list)])
-;; 	     (list)))
-;;        function-names)))))
+;;  (define (symbol-list> a b)
+;;    (cond
+;;     [(and (null-list? a) (not (null-list? b))) #f]
+;;     [(and (not (null-list? a)) (null-list? b)) #t]
+;;     [(eq? (car a) (car b)) (symbol-list> (cdr a) (cdr b))]
+;;     [(string> (symbol->string (car a)) (symbol->string (car b)))]))
+
+
+;;     (let* ([attr-list (append-map
+;; 		       (lambda (x)
+;; 			 (if (string? (car x))
+;; 			     (match (string-match (regexp "cp([A-Z][A-Za-z]+)(Is|Get|Set|Add|Remove)([A-Za-z]+)") (car x))
+;; 			       [(m class op attribute)
+;; 				(list (map (compose string->symbol usual-naming-transform) (list class attribute op)))]
+;; 			       [ow '()])
+;; 			     '()))
+;; 		       function-names)]
+;; 	   [expanded (sort (append-map (lambda (x) (apply (lambda (class attr op)
+;; 						       (cond
+;; 							[(equal? op 'get)    (list (define-attr-access attr-list class attr op))]
+;; 							[(equal? op 'add)    (list (define-varargs attr-list class attr op))]
+;; 							[(equal? op 'remove) (list (define-varargs attr-list class attr op))]
+;; 							[(equal? op 'is)     (list (define-predicate attr-list class attr op))]
+;; 							['()]))
+;; 						     x))
+;; 				       attr-list)
+;; 			   (lambda (x y) (string< (symbol->string (extract-name x))
+;; 					     (symbol->string (extract-name y)))))])
+;;       (with-output-to-file "chipmunk-getter-with-setters.scm"
+;; 	(lambda ()
+;; 	  (for-each pretty-print expanded)))))
