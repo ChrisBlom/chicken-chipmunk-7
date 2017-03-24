@@ -28,6 +28,8 @@
 (bind "#define CP_HASH_VALUE_TYPE unsigned int")
 (bind "#define CP_COLLISION_TYPE_TYPE unsigned int")
 
+(bind "#define CP_SPACE_DISABLE_DEBUG_API true")
+
 (define uint
   (foreign-lambda* unsigned-int ((int x))
     "unsigned int n = x;
