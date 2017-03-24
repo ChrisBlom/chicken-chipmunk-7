@@ -1,13 +1,19 @@
 (module chipmunk
   *
-  (import scheme chicken srfi-1)
-  (use srfi-4)
+  (import scheme chicken srfi-1 foreign)
+  (use srfi-4 srfi-1)
 
 #>
 #include <chipmunk/chipmunk_private.h>
 #include <chipmunk/chipmunk.h>
 #include <chipmunk/cpRobust.h>
 <#
+
+
+(define-foreign-type c-collision-begin-func     (function bool (c-arbiter c-space c-pointer)))
+(define-foreign-type c-collision-presolve-func  (function bool (c-arbiter c-space c-pointer)))
+(define-foreign-type c-collision-postsolve-func (function void (c-arbiter c-space c-pointer)))
+(define-foreign-type c-collision-seperate-func  (function void (c-arbiter c-space c-pointer)))
 
 ;; Bindings for the chipmunk
 (include "chipmunk-bind.scm")
@@ -90,6 +96,28 @@
 (define wildcard-collision (foreign-value "(~(cpCollisionType)0)" unsigned-int32))
 
 (define no-group (foreign-value "((cpGroup)0)" unsigned-int32))
+(define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
+
+(define shift-left
+  (foreign-lambda* unsigned-int32 ((unsigned-int32 i) (unsigned-int32 offset))
+    "C_return(i << offset);"))
+
+(define group
+  (foreign-lambda* unsigned-int32 ((unsigned-int32 i))
+    "C_return(i);"))
+
+(define (bitmask-union elem) (let* ([h (car elem)] [t (cdr elem)] [m (shift-left 1 (- h 1))]) (if (null-list? t) m (bitwise-ior m (bitmask-union t)))))
+
+(define (shape-filter
+	 group      ;;
+	 categories ;;
+	 mask       ;;
+	 )
+  (shape-filter-new group
+		    (bitmask-union categories)
+		    (bitmask-union mask)))
+
+
 (define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
 
 ;;;; Getter + Setters
