@@ -120,6 +120,45 @@
 
 (define all-groups (foreign-value "(~(cpGroup)0)" unsigned-int32))
 
+(define transform-identity (transform-new 1.0 0.0 0.0 1.0 0.0 0.0) )
+
+
+
+(define (partition-pairs xs)
+  (if (null-list? xs)
+      xs
+      (cons (list (car xs) (cadr xs))
+	    (partition-pairs (cddr xs)))))
+
+;; ;; convert a f64 holding cpVects to a cpVect array
+;; (define f64vector->vectarray
+;;   (foreign-lambda* (c-pointer "cpVect") ((unsigned-int32 n)
+;; 					 (f64vector v))
+;;     "cpVect* arr = ((cpVect *) v);
+;;      C_return(arr);"))
+
+
+(define f64vector->vectarray
+  (foreign-lambda* (c-pointer "cpVect") ((unsigned-int32 n)
+					 (f64vector v))
+    "cpVect *arr = malloc( n * sizeof(cpVect) ) ;
+     memcpy(arr,v,sizeof(cpVect));
+     C_return(arr);"))
+
+
+(define (vect-list->vect-array vects)
+  (list->f64vector (append-map f64vector->list vects)))
+
+(define (vect-array->vect-list vect-array)
+  (map list->f64vector (partition-pairs (f64vector->list vect-array))))
+
+(define (varray . vects)
+  (let* ([f  (list->f64vector (append-map f64vector->list vects))]
+	 [n (f64vector-length f)])
+    (f64vector->vectarray n f)))
+
+
+
 ;;;; Getter + Setters
 
 (include "chipmunk-getter-with-setters.scm")
