@@ -109,9 +109,9 @@
 (define (bitmask-union elem) (let* ([h (car elem)] [t (cdr elem)] [m (shift-left 1 (- h 1))]) (if (null-list? t) m (bitwise-ior m (bitmask-union t)))))
 
 (define (shape-filter
-	 group      ;;
-	 categories ;;
-	 mask       ;;
+	 group      ;; objects doesn't collide with objects with the same group
+	 categories ;; list of categories the object belongs to
+	 mask       ;; list of categories the object collides with
 	 )
   (shape-filter-new group
 		    (bitmask-union categories)
@@ -149,18 +149,40 @@
 (define (vect-list->vect-array vects)
   (list->f64vector (append-map f64vector->list vects)))
 
+(define (vect-list->f64vector vects)
+  (list->f64vector (append-map f64vector->list vects)))
+
 (define (vect-array->vect-list vect-array)
   (map list->f64vector (partition-pairs (f64vector->list vect-array))))
 
 (define (varray . vects)
-  (let* ([f  (list->f64vector (append-map f64vector->list vects))]
-	 [n (f64vector-length f)])
+  (let* ([f (list->f64vector (append-map f64vector->list vects))]
+	 [n (length vects)])
     (f64vector->vectarray n f)))
 
+(define (v->list vect)
+  (f64vector->list vect))
 
+(define (list->v vect)
+  (assert (= 2 (length v)) "only 2 element lists can be converted to cpVects")
+  (f64vector->list vect))
+
+(define (moment-for-polygon mass vertices offset radius)
+  ((foreign-lambda* float ((double mass) (int numVerts) (f64vector vertices) (f64vector offset) (double radius))"
+        double moment = cpMomentForPoly(mass,numVerts, (cpVect*)vertices, *(cpVect*)offset,radius);
+	C_return(moment);")
+   mass (length vertices) (vect-list->f64vector vertices) offset radius))
+
+(define (create-polygon-shape body vertices offset radius)
+  (let ((vertices-vector (vect-list->f64vector vertices)))
+    ((foreign-lambda* (c-pointer "cpShape")
+	 (((c-pointer "cpBody") body)
+	  (integer numVerts)
+	  (f64vector verts)
+	  (f64vector transform)
+	  (float radius)) "
+	C_return(cpPolyShapeNew(body, numVerts/2, (cpVect*)verts, *(cpTransform*)transform, radius));")
+     body (f64vector-length vertices-vector) vertices-vector offset radius)))
 
 ;;;; Getter + Setters
-
 (include "chipmunk-getter-with-setters.scm")
-
-)
