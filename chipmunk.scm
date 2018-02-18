@@ -34,11 +34,30 @@
 (define (v.y cpv)
   (f64vector-ref cpv 1))
 
+(define v-x
+  (getter-with-setter
+   (lambda (v) (f64vector-ref v 0))
+   (lambda (v x) (f64vector-set! v 0 x))))
+
+(define v-y
+  (getter-with-setter
+   (lambda (v) (f64vector-ref v 1))
+   (lambda (v y) (f64vector-set! v 1 y))))
+
+(define (v-update v f . args)
+  (let ([res (apply f v args )])
+    (set! (v-x v) (v-x res))
+    (set! (v-y v) (v-y res))
+    ))
+
+
+
 (define v= veql)
 (define v+ vadd)
 (define v- vsub)
 (define v* vmult)
 (define v. vdot)
+(define (v-neg x) (vsub v0 x))
 
 (define (vsum vs)
   (reduce v+ v0 vs))
