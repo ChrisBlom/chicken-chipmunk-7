@@ -1,0 +1,1 @@
+csc -s -I./Chipmunk2D/include/chipmunk -I./Chipmunk2D/include ./Chipmunk2D/src/*.c chipmunk.scm -C -O2 -C --std=gnu99 -C -Wvisibility -C -Wincompatible-pointer-types

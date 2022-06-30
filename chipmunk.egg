@@ -1,0 +1,21 @@
+((author "Chris Blom")
+ (synopsis "Chicken bindings for the Chipmunk Physics Engine")
+ (license "BSD")
+ (dependencies bind)
+ (test-dependencies test)
+ (category data)
+ (components #;
+  (c-include chipmunk-bindings		;
+  (source-dependencies "Chipmunk2D/include/chipmunk"))
+
+
+  (extension chipmunk	;		;
+	     (source-dependencies "./Chipmunk2D/src/*.c" "chipmunk.scm") ; ;
+	     (csc-options "-I./Chipmunk2D/include/chipmunk" "-I./Chipmunk2D/include" "-I./Chipmunk2D/src/*.c") ; ;
+;	     (component-dependencies chipmunk-bindings ) ; ;
+	     )
+
+  ))
+
+
+					;	     (files "chipmunk.scm" "chipmunk.setup")
