@@ -8,14 +8,6 @@
   (c-include chipmunk-bindings		;
   (source-dependencies "Chipmunk2D/include/chipmunk"))
 
-
-  (extension chipmunk	;		;
-	     (source-dependencies "./Chipmunk2D/src/*.c" "chipmunk.scm") ; ;
-	     (csc-options "-I./Chipmunk2D/include/chipmunk" "-I./Chipmunk2D/include" "-I./Chipmunk2D/src/*.c") ; ;
-;	     (component-dependencies chipmunk-bindings ) ; ;
-	     )
-
-  ))
-
-
-					;	     (files "chipmunk.scm" "chipmunk.setup")
+  (extension chipmunk
+	     (custom-build "build.sh")
+	     )))
