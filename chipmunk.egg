@@ -4,10 +4,6 @@
  (dependencies bind)
  (test-dependencies test)
  (category data)
- (components #;
-  (c-include chipmunk-bindings		;
-  (source-dependencies "Chipmunk2D/include/chipmunk"))
-
+ (components
   (extension chipmunk
-	     (custom-build "build.sh")
-	     )))
+	     (custom-build "build.sh"))))

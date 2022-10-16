@@ -1,12 +1,8 @@
 (import chicken.base)
 (import chicken.syntax)
 (import chicken.foreign)
-(import chicken.pretty-print)
 (import chicken.string)
-(import bind srfi-4)
-(import regex)
-(import srfi-1  scheme )
-(import scheme matchable )
+(import bind)
 
 (import-for-syntax bind-translator)
 (import-for-syntax regex)
@@ -150,16 +146,12 @@
  (print "M" a#struct-by-value-transformer)
  )
 
-;; dummy declaration to avoid unbound identifier error
-					;(define struct-by-value-transformer #f)
-
 ;; these headers are modified for compatibility with chicken bind
 (bind-include-path "./include")
 
 ;; strip "cp.." prefix
 (bind-rename/pattern "^cp" "")
 
-;; (include "struct-by-value-transformer.scm")
 (bind-options default-renaming: ""
   	      foreign-transformer: (lambda (e r) (a#struct-by-value-transformer e r))
   	      export-constants: true
